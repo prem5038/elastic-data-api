@@ -1,0 +1,48 @@
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "bool": {
+            "should": [
+              {
+                "query_string": {
+                  "query": "*Windows*",
+                  "fields": [
+                    "message"
+                  ]
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "query_string": {
+                  "query": "*Gecko",
+                  "fields": [
+                    "agent"
+                  ]
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "format": "strict_date_optional_time",
+              "gte": "2015-11-04T11:12:13",
+              "lte": "2015-11-04T11:20:20"
+            }
+          }
+        }
+      ],
+      "minimum_should_match": 1
+    }
+  }
+}

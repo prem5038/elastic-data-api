@@ -1,0 +1,44 @@
+{
+  "query": {
+    "bool" :{
+      "filter": [
+        {
+          "bool": {
+            "should": [
+              {
+                "query_string": {
+                  "fields": [
+                    "message"
+                  ],
+                  "query": "*Windows*"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "agent": "*Gecko*"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "range" : {
+            "@timestamp": {
+              "gte": "2020-05-25T12:47:53.238Z",
+              "lte": "2020-05-25T13:47:53.238Z",
+              "format": "strict_date_optional_time"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
