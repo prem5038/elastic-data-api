@@ -22,7 +22,7 @@
             "should": [
               {
                 "query_string": {
-                  "query": "*Gecko",
+                  "query": "*Gecko*",
                   "fields": [
                     "agent"
                   ]
@@ -36,13 +36,12 @@
           "range": {
             "@timestamp": {
               "format": "strict_date_optional_time",
-              "gte": "2015-11-04T11:12:13",
-              "lte": "2015-11-04T11:20:20"
+              "gte": "2020-05-25T12:47:53.238Z",
+              "lte": "2020-05-25T13:47:53.238Z"
             }
           }
         }
-      ],
-      "minimum_should_match": 1
+      ]
     }
   }
 }

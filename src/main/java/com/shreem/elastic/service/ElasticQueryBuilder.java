@@ -30,7 +30,8 @@ public class ElasticQueryBuilder {
             boolTypeArr.put(entry);
         }
         boolJsonObj.put(elasticBoolType.getValue(), boolTypeArr);
-        boolJsonObj.put("minimum_should_match", 1);
+        if(elasticBoolType.equals(ElasticBoolType.SHOULD))
+            boolJsonObj.put("minimum_should_match", 1);
         boolHolder.put("bool", boolJsonObj);
 
         return boolHolder;

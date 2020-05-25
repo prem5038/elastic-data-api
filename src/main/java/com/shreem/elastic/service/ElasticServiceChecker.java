@@ -28,11 +28,12 @@ public class ElasticServiceChecker {
     @PostConstruct
     public void init() throws Exception {
         System.out.println("Elastic Checker ....");
-        //this.checkElasticQueryService();
-        System.out.println("Query: ");
-        String searchQuery = "message: \"*Windows*\" AND agent: \"*Gecko\" AND timestamp: [\"2015-11-04T11:12:13\" TO \"2015-11-04T11:20:20\"]";
 
-        System.out.println(queryBuilder.buildQuery(searchQuery));
+        System.out.println("Query: ");
+        String searchQuery = "message: \"*Windows*\" AND agent: \"*Gecko*\" AND timestamp: [\"2020-05-25T12:47:53.238Z\" TO \"2020-05-25T13:47:53.238Z\"]";
+
+        this.checkElasticQueryService(searchQuery);
+
     }
 
 
@@ -41,8 +42,9 @@ public class ElasticServiceChecker {
 
 
 
-    private void checkElasticQueryService() throws IOException {
-        String requestStr = ElasticQueryService.asString(requestMatchAll.getInputStream());
+    private void checkElasticQueryService(String kibanaQuery) throws Exception {
+        //String requestStr = ElasticQueryService.asString(requestMatchAll.getInputStream());
+        String requestStr = queryBuilder.buildQuery(kibanaQuery).toString();
         System.out.println("Request: ");
         System.out.println(requestStr);
         Set<String> selectFields = new HashSet<>();
