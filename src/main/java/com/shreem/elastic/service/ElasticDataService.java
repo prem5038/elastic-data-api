@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class ElasticDataService {
@@ -97,10 +97,55 @@ public class ElasticDataService {
                 myWriter.close();
             }
         } catch (IOException e) {
-            System.out.println("An error occurred.");
+            System.out.println("An error occurred."+fileName);
             e.printStackTrace();
         }
 
     }
+
+
+    public void fetchMappings(String ids){
+        Set<String> selectFieldSet = new HashSet<>();
+        selectFieldSet.add("message");
+        selectFieldSet.add("agent");
+
+        Predicate<File> predicate = file -> !file.isDirectory();
+
+        if(!ids.isEmpty()) {
+            List<String> idList = Arrays.asList(ids.split(","));
+            predicate = file -> {
+                boolean isPresent = false;
+                for (String id : idList) {
+                    isPresent = file.getName().contains(id);
+                }
+                return isPresent;
+            };
+        }
+
+            File folder = new File(responseBackupPath);
+            List<File> queryResponseFiles = Arrays.asList(folder.listFiles());
+
+
+            queryResponseFiles.stream().filter(predicate).forEach(file -> {
+                try {
+                    String contents = new String(Files.readAllBytes(Paths.get(file.getPath())));
+                    Set<Map<String,String>> resultSet = this.elasticQueryService.parseQueryResponseForResultSet(contents, selectFieldSet);
+                    Set<String> contentSet = resultSet.stream().map(m -> m.get("message")+", "+m.get("agent")).collect(Collectors.toSet());
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for(String content: contentSet){
+                        stringBuilder.append(content);
+                    }
+                    String mappingsFileName = file.getName().substring(0,file.getName().indexOf(".json"))+"_mappings.txt";
+                    this.writeToFile(stringBuilder.toString(),responseBackupPath+"/mappings/"+mappingsFileName,false);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+    }
+
+
 
 }

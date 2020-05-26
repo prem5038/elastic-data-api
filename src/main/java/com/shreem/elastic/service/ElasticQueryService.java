@@ -84,7 +84,7 @@ public class ElasticQueryService {
         return new JSONObject(response).getInt("count");
     }
 
-    private Set<Map<String,String>> parseQueryResponseForResultSet(String response, Set<String> selectFields){
+    public Set<Map<String,String>> parseQueryResponseForResultSet(String response, Set<String> selectFields){
         Set<Map<String,String>> resultSet = new HashSet<>();
         try{
             JSONArray results = new JSONObject(response).getJSONObject("hits").getJSONArray("hits");

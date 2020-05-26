@@ -29,4 +29,11 @@ public class AppController {
         return "Request sent!";
     }
 
+    @GetMapping(value = "/elastic/fetch/mappings")
+    public String fetchMappingsFromResponseDump(
+            @RequestParam(value = "ids", defaultValue = "") String ids){
+        elasticDataService.fetchMappings(ids);
+        return "Request sent";
+    }
+
 }
