@@ -1,5 +1,7 @@
 package com.shreem.elastic.config;
 
+import com.shreem.elastic.model.RequestQuery;
+import com.shreem.elastic.model.ServiceModel;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -11,11 +13,15 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
+import java.util.*;
 
 
 @Configuration
-public class ElasticConfig {
+public class AppConfig {
 
     @Value("${elastic.host}")
     String elasticHost;
@@ -31,6 +37,9 @@ public class ElasticConfig {
 
     @Value("${elastic.password}")
     String elasticPassword;
+
+    @Value("${request.query.file}")
+    Resource requestQueryFile;
 
 
 
@@ -49,6 +58,25 @@ public class ElasticConfig {
                     }
                 });
         return builder.build();
+    }
+
+    @Bean
+    public RequestQuery requestQuery() throws IOException {
+        LinkedHashMap<String,Object> request = new Yaml().load(requestQueryFile.getInputStream());
+        RequestQuery requestQuery = new RequestQuery();
+        requestQuery.setApplication((String) request.get("application"));
+        List<Map<String,String>> services = (List<Map<String, String>>) request.get("services");
+        Map<String, ServiceModel> serviceMap = new HashMap<>();
+        for(Map<String,String> entryMap: services){
+            ServiceModel service = new ServiceModel();
+            service.setId(entryMap.get("id"));
+            service.setName(entryMap.get("name"));
+            service.setKibanaQuery(entryMap.get("kibanaQuery"));
+            service.setSelectFields(entryMap.get("selectFields"));
+            serviceMap.put(service.getId(), service);
+        }
+        requestQuery.setServices(serviceMap);
+        return requestQuery;
     }
 
 
